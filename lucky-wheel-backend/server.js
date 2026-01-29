@@ -10,12 +10,32 @@ app.use(cors());
 app.use(express.json());
 
 // MongoDB Connection
-mongoose.connect(process.env.MONGODB_URI, {
-  serverSelectionTimeoutMS: 5000,
-  socketTimeoutMS: 10000,
-})
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
+const connectWithRetry = async () => {
+  const MAX_RETRIES = 10;
+  let retries = 0;
+
+  while (retries < MAX_RETRIES) {
+    try {
+      await mongoose.connect(process.env.MONGODB_URI, {
+        serverSelectionTimeoutMS: 5000,
+        socketTimeoutMS: 45000,
+      });
+      console.log('✅ Connected to MongoDB');
+      break;
+    } catch (err) {
+      retries++;
+      console.error(`❌ MongoDB connection error (Attempt ${retries}/${MAX_RETRIES}):`, err.message);
+      if (retries === MAX_RETRIES) {
+        console.error('⛔ Failed to connect to MongoDB after maximum retries. Exiting...');
+        process.exit(1);
+      }
+      console.log('⏳ Retrying in 5 seconds...');
+      await new Promise(resolve => setTimeout(resolve, 5000));
+    }
+  }
+};
+
+connectWithRetry();
 
 // Routes
 const usersRouter = require('./routes/users');
