@@ -47,8 +47,14 @@ done
 DATABASE_URL=""
 while [ -z "$DATABASE_URL" ]; do
     echo "4. Enter your Supabase Connection String:"
-    echo "   Format: postgresql://postgres.user...:[PASSWORD]@aws-0-....pooler.supabase.com:6543/postgres"
-    read -p "   DATABASE_URL: " DATABASE_URL
+    echo "   (Press Enter to use default: postgresql://postgres.ndcgyeawweszeltnfnjb:KHANHVYy.y2010@aws-1-ap-south-1.pooler.supabase.com:6543/postgres)"
+    read -p "   DATABASE_URL: " INPUT_URL
+    
+    if [ -z "$INPUT_URL" ]; then
+        DATABASE_URL="postgresql://postgres.ndcgyeawweszeltnfnjb:KHANHVYy.y2010@aws-1-ap-south-1.pooler.supabase.com:6543/postgres"
+    else
+        DATABASE_URL="$INPUT_URL"
+    fi
     
     if [[ "$DATABASE_URL" != postgres* ]]; then
          echo "⚠️  Error: Connection String must start with 'postgres' or 'postgresql'"
