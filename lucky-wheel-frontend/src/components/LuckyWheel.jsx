@@ -121,7 +121,7 @@ const LuckyWheel = () => {
       setSpinning(true);
       
       try {
-        const excludedIds = newSessionWinners.map(w => w._id);
+        const excludedIds = newSessionWinners.map(w => w.id);
         
          const result = await spinWheel(excludedIds);
           if (!result.success) {
@@ -130,7 +130,7 @@ const LuckyWheel = () => {
             return;
           }
           
-          const winnerIndex = users.findIndex(u => u._id === result.winner.id);
+          const winnerIndex = users.findIndex(u => u.id === result.winner.id);
           const angleStep = (Math.PI * 2) / users.length;
           const randomOffset = 0.1 + Math.random() * 0.8;
           const winnerAngle = (winnerIndex * angleStep) + (angleStep * randomOffset);
@@ -155,7 +155,7 @@ const LuckyWheel = () => {
              
              if (progress < 1) requestAnimationFrame(animate);
              else {
-                const winnerData = { ...result.winner, _id: result.winner.id };
+                const winnerData = { ...result.winner, id: result.winner.id };
                 setWinner(winnerData);
                 setSessionWinners(prev => [...prev, winnerData]);
                 newSessionWinners.push(winnerData);

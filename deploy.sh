@@ -4,7 +4,7 @@
 # Installs Docker, sets up SSL with Let's Encrypt (via Caddy), and runs the app.
 
 echo "======================================================="
-echo "   LUCKY WHEEL AUT DEPLOYMENT SCRIPT (VPS)"
+echo "   LUCKY WHEEL AUTO DEPLOYMENT SCRIPT (VPS)"
 echo "======================================================="
 
 # 1. Update System & Install Docker (if not exists)
@@ -16,7 +16,7 @@ then
     rm get-docker.sh
     
     # Start and Enable Docker Service
-    console "Starting Docker Service..."
+    echo "Starting Docker Service..."
     systemctl start docker
     systemctl enable docker
     
@@ -44,10 +44,16 @@ while [ -z "$ADMIN_PASS" ]; do
     read -p "3. Enter a secure Admin Password for the App: " ADMIN_PASS
 done
 
-DB_PASS=""
-while [ -z "$DB_PASS" ]; do
-    read -s -p "4. Enter a secure Database Password: " DB_PASS
-    echo "" # New line after silent input
+DATABASE_URL=""
+while [ -z "$DATABASE_URL" ]; do
+    echo "4. Enter your Supabase Connection String:"
+    echo "   Format: postgresql://postgres.user...:[PASSWORD]@aws-0-....pooler.supabase.com:6543/postgres"
+    read -p "   DATABASE_URL: " DATABASE_URL
+    
+    if [[ "$DATABASE_URL" != postgres* ]]; then
+         echo "⚠️  Error: Connection String must start with 'postgres' or 'postgresql'"
+         DATABASE_URL=""
+    fi
 done
 
 echo ""
@@ -57,9 +63,6 @@ echo "Domain: $DOMAIN"
 echo "Email: $EMAIL"
 echo "-------------------------------------------------------"
 echo ""
-
-# Remove check since we loop until valid
-# if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then ... fi
 
 # 3. Create Caddyfile for SSL routing
 echo "Creating Caddyfile..."
@@ -86,12 +89,14 @@ cat > .env <<EOF
 DOMAIN=$DOMAIN
 EMAIL=$EMAIL
 ADMIN_PASSWORD=$ADMIN_PASS
-DB_PASSWORD=$DB_PASS
+DATABASE_URL=$DATABASE_URL
 JWT_SECRET=$(openssl rand -hex 32)
 EOF
 
 # 5. Run Docker Compose
 echo "Starting Application..."
+# Stop previous containers to remove Mongo if needed
+docker compose -f docker-compose.prod.yml down
 docker compose -f docker-compose.prod.yml up -d --build
 
 echo "======================================================="

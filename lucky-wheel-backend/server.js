@@ -1,6 +1,6 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
+const { connectDB } = require('./config/database');
 require('dotenv').config();
 
 const app = express();
@@ -9,33 +9,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// MongoDB Connection
-const connectWithRetry = async () => {
-  const MAX_RETRIES = 10;
-  let retries = 0;
-
-  while (retries < MAX_RETRIES) {
-    try {
-      await mongoose.connect(process.env.MONGODB_URI, {
-        serverSelectionTimeoutMS: 5000,
-        socketTimeoutMS: 45000,
-      });
-      console.log('✅ Connected to MongoDB');
-      break;
-    } catch (err) {
-      retries++;
-      console.error(`❌ MongoDB connection error (Attempt ${retries}/${MAX_RETRIES}):`, err.message);
-      if (retries === MAX_RETRIES) {
-        console.error('⛔ Failed to connect to MongoDB after maximum retries. Exiting...');
-        process.exit(1);
-      }
-      console.log('⏳ Retrying in 5 seconds...');
-      await new Promise(resolve => setTimeout(resolve, 5000));
-    }
-  }
-};
-
-connectWithRetry();
+// Database Connection
+connectDB();
 
 // Routes
 const usersRouter = require('./routes/users');
@@ -50,7 +25,7 @@ app.use('/api/seed', seedRouter);
 
 // Health check
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Lucky Wheel Backend is running' });
+  res.json({ status: 'OK', message: 'Lucky Wheel Backend (PostgreSQL) is running' });
 });
 
 // Error handling middleware
