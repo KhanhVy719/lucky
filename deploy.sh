@@ -14,6 +14,12 @@ then
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh get-docker.sh
     rm get-docker.sh
+    
+    # Start and Enable Docker Service
+    console "Starting Docker Service..."
+    systemctl start docker
+    systemctl enable docker
+    
     echo "Docker installed successfully."
 else
     echo "Docker is already installed."
