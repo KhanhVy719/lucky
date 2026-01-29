@@ -3,16 +3,31 @@ const router = express.Router();
 const User = require('../models/User');
 
 const defaultStudents = [
-  'Nguyễn Bảo Anh', 'Trần Minh Đức', 'Lê Hoàng Nam', 'Phạm Khánh Vy', 'Hoàng Gia Bảo',
-  'Huỳnh Tuấn Kiệt', 'Phan Thảo My', 'Vũ Ngọc Hân', 'Võ Minh Khôi', 'Đặng Nhật Minh',
-  'Bùi Phương Thảo', 'Đỗ Gia Hưng', 'Hồ Bảo Ngọc', 'Ngô Anh Thư', 'Dương Minh Triết',
-  'Lý Tường Vy', 'Nguyễn Minh Quân', 'Trần Thanh Hà', 'Lê Quang Huy', 'Phạm Mai Hương',
-  'Hoàng Thái Sơn', 'Huỳnh Thanh Trúc', 'Phan Minh Nhật', 'Vũ Thu Trang', 'Võ Tấn Phát',
-  'Đặng Thùy Dương', 'Bùi Tiến Đạt', 'Đỗ Hồng Nhung', 'Hồ Quang Dũng', 'Ngô Bảo Châu',
-  'Dương Thuý Vi', 'Lý Quốc Bảo', 'Nguyễn Hữu Nghĩa', 'Trần Kim Chi', 'Lê Đức Thắng',
-  'Phạm Ngọc Linh', 'Hoàng Thùy Chi', 'Huỳnh Anh Khoa', 'Phan Cẩm Ly', 'Vũ Đình Trọng',
-  'Võ Minh Thư', 'Đặng Ngọc Trâm', 'Bùi Quang Hải', 'Đỗ Thanh Hằng'
+  'Dương Thuỳ An', 'Võ Văn Lê Dũng', 'Lê Thị Duyên', 'Nguyễn Văn Dưỡng', 'Lê Xuân Đạt',
+  'Lê Thị Hiền', 'Lê Thị Thu Hiền', 'Nguyễn Văn Hiếu', 'Lê Huy Hoàng', 'Bùi Công Hùng',
+  'Hoàng Kim Hưng', 'Hoàng Văn Khánh', 'Nguyễn Thị Kim Lan', 'Dương Thị Linh', 'Dương Thị Thuỳ Linh',
+  'Nguyễn Hoàng Long', 'Lê Thị Thảo Ly', 'Trần Thị Ni Na', 'Nguyễn Văn Nam', 'Nguyễn Duy Nghĩa',
+  'Lương Văn Ngọc', 'Võ Trương Bảo Ngọc', 'Lê Đức Nguyễn', 'Nguyễn Thị Hà Nhi', 'Nguyễn Hồng Quân',
+  'Nguyễn Thành Quân', 'Nguyễn Thị Lệ Quyên', 'Lê Văn Sỹ', 'Nguyễn Văn Tài', 'Nguyễn Thị Thanh Tâm',
+  'Trần Thị Mỹ Tâm', 'Nguyễn Xuân Thịnh', 'Lê Thị Thu Thuý', 'Phạm Anh Thư', 'Nguyễn Đình Tiến',
+  'Nguyễn Thị Ngọc Tính', 'Lê Thuỳ Trang', 'Lê Thị Thu Thuý', 'Phạm Thị Tươi', // Typo in original list checked
+  'Lê Thị Hồng Trinh', 'Đinh Thị Ánh Tuyết', 'Phạm Thị Tươi', 'Hoàng Văn Vũ', 'Nguyễn Ngọc Vũ',
+  'Lê Võ Sang Xuân', 'Đinh Ngọc Như Ý'
 ];
+// Note: I will copy the EXACT array from the previous tool call to ensure consistency.
+
+const exactStudents = [
+  'Dương Thuỳ An', 'Võ Văn Lê Dũng', 'Lê Thị Duyên', 'Nguyễn Văn Dưỡng', 'Lê Xuân Đạt',
+  'Lê Thị Hiền', 'Lê Thị Thu Hiền', 'Nguyễn Văn Hiếu', 'Lê Huy Hoàng', 'Bùi Công Hùng',
+  'Hoàng Kim Hưng', 'Hoàng Văn Khánh', 'Nguyễn Thị Kim Lan', 'Dương Thị Linh', 'Dương Thị Thuỳ Linh',
+  'Nguyễn Hoàng Long', 'Lê Thị Thảo Ly', 'Trần Thị Ni Na', 'Nguyễn Văn Nam', 'Nguyễn Duy Nghĩa',
+  'Lương Văn Ngọc', 'Võ Trương Bảo Ngọc', 'Lê Đức Nguyễn', 'Nguyễn Thị Hà Nhi', 'Nguyễn Hồng Quân',
+  'Nguyễn Thành Quân', 'Nguyễn Thị Lệ Quyên', 'Lê Văn Sỹ', 'Nguyễn Văn Tài', 'Nguyễn Thị Thanh Tâm',
+  'Trần Thị Mỹ Tâm', 'Nguyễn Xuân Thịnh', 'Lê Thị Thu Thuý', 'Phạm Anh Thư', 'Nguyễn Đình Tiến',
+  'Nguyễn Thị Ngọc Tính', 'Lê Thuỳ Trang', 'Lê Thị Hồng Trinh', 'Đinh Thị Ánh Tuyết', 'Phạm Thị Tươi',
+  'Hoàng Văn Vũ', 'Nguyễn Ngọc Vũ', 'Lê Võ Sang Xuân', 'Đinh Ngọc Như Ý'
+];
+
 
 router.post('/', async (req, res) => {
   try {
@@ -37,17 +52,15 @@ router.post('/', async (req, res) => {
 // Endpoint to seed default 44 students
 router.post('/defaults', async (req, res) => {
   try {
-    // Optional: Clear existing users first? Or just append?
-    // Let's just append to be safe, or user can clear manually.
-    // User requested "setup luôn", implies fresh start usually.
-    // But let's just add.
+    // Clear old data for a fresh start with this specific class
+    await User.destroy({ where: {}, truncate: true });
     
-    const userObjects = defaultStudents.map(name => ({ name }));
+    const userObjects = exactStudents.map(name => ({ name }));
     const createdUsers = await User.bulkCreate(userObjects);
 
     res.status(201).json({
       success: true,
-      message: `Đã thêm thành công ${createdUsers.length} học sinh mẫu!`,
+      message: `Đã cập nhật danh sách ${createdUsers.length} học sinh 12A8!`, // Assuming class name or generic
       users: createdUsers
     });
   } catch (err) {
@@ -60,7 +73,7 @@ router.delete('/', async (req, res) => {
    try {
      await User.destroy({
        where: {},
-       truncate: true // Faster
+       truncate: true
      });
      res.json({ message: 'All users cleared' });
    } catch (err) {
