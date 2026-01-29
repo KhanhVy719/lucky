@@ -11,7 +11,7 @@ const SeedButton = () => {
 
     try {
       setLoading(true);
-      const response = await api.post('/seed/seed');
+      const response = await api.post('/seed/defaults');
       alert(`✅ ${response.data.message}`);
       window.location.reload();
     } catch (error) {

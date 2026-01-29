@@ -175,7 +175,7 @@ const AdminPanel = () => {
               </thead>
               <tbody>
                 {users.map((user, index) => (
-                  <tr key={user._id}>
+                  <tr key={user.id}>
                     <td style={{ fontWeight: '600' }}>{index + 1}</td>
                     <td style={{ fontWeight: '600' }}>{user.name}</td>
                     <td>
@@ -190,7 +190,7 @@ const AdminPanel = () => {
                         <input
                           type="checkbox"
                           checked={user.blacklisted}
-                          onChange={() => handleToggleBlacklist(user._id)}
+                          onChange={() => handleToggleBlacklist(user.id)}
                           style={{ 
                             width: '20px', 
                             height: '20px', 
@@ -205,7 +205,7 @@ const AdminPanel = () => {
                     </td>
                     <td>
                       <button
-                        onClick={() => handleDeleteUser(user._id)}
+                        onClick={() => handleDeleteUser(user.id)}
                         className="btn btn-secondary"
                         style={{ padding: '8px 16px', fontSize: '14px' }}
                       >
