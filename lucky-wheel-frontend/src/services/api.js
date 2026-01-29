@@ -55,8 +55,8 @@ export const deleteUser = async (userId) => {
 };
 
 // Spin
-export const spinWheel = async () => {
-  const response = await api.post('/spin');
+export const spinWheel = async (excludedIds = []) => {
+  const response = await api.post('/spin', { excludedIds });
   return response.data;
 };
 

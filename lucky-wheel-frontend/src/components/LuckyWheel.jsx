@@ -7,6 +7,10 @@ const LuckyWheel = () => {
   const [spinning, setSpinning] = useState(false);
   const [winner, setWinner] = useState(null);
   const [rotation, setRotation] = useState(0);
+  const [error, setError] = useState(null);
+
+  const [spinCount, setSpinCount] = useState(1);
+  const [sessionWinners, setSessionWinners] = useState([]);
 
   const drawWheel = () => {
     const canvas = canvasRef.current;
@@ -80,10 +84,12 @@ const LuckyWheel = () => {
 
   const fetchUsers = async () => {
     try {
+      setError(null);
       const data = await getAllUsers();
       setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
+      setError('Không thể kết nối tới máy chủ. Vui lòng kiểm tra lại đường truyền.');
     }
   };
 
@@ -97,18 +103,9 @@ const LuckyWheel = () => {
     }
   }, [users, rotation]);
 
-  const [spinCount, setSpinCount] = useState(1);
-  const [sessionWinners, setSessionWinners] = useState([]);
-
-  // ... (keep useEffects and drawWheel as is) ...
-
   const handleSpin = async () => {
     if (spinning || users.length === 0) return;
 
-    // Reset session winners if starting a new batch OR keep them? 
-    // Requirement says: "người nào quay trúng thì tiếp tục quay theo số lượt mình đã chọn"
-    // implies a fresh start or continuation. 
-    // Let's reset session winners at start of a NEW spin button click if not already spinning.
     setSessionWinners([]); 
     
     let currentSpin = 0;
@@ -122,12 +119,10 @@ const LuckyWheel = () => {
       }
       
       setSpinning(true);
-      // Don't clear winner immediately, maybe kept for history? 
-      // User wants to see who won each time.
       
       try {
         const excludedIds = newSessionWinners.map(w => w._id);
-         // ... (API call) ...
+        
          const result = await spinWheel(excludedIds);
           if (!result.success) {
             alert('Hết người để quay!');
@@ -179,9 +174,7 @@ const LuckyWheel = () => {
     spinOneTurnInternal(rotation);
   };
   
-  // (Render updates for input)
   const triggerConfetti = () => {
-    // Simple confetti effect using canvas
     const canvas = document.createElement('canvas');
     canvas.style.position = 'fixed';
     canvas.style.top = '0';
@@ -233,7 +226,17 @@ const LuckyWheel = () => {
           Quay Ngay Để Nhận Thưởng!
         </h2>
 
-        {users.length === 0 ? (
+        {error ? (
+          <div className="bg-red-900/50 border border-red-500 text-red-100 p-4 rounded mb-6">
+            <p className="mb-2">{error}</p>
+            <button 
+              onClick={fetchUsers}
+              className="px-4 py-2 bg-red-600 hover:bg-red-700 rounded transition"
+            >
+              Thử lại
+            </button>
+          </div>
+        ) : users.length === 0 ? (
           <div className="flex justify-center items-center" style={{ minHeight: '400px' }}>
             <div className="spinner"></div>
           </div>
@@ -308,7 +311,7 @@ const LuckyWheel = () => {
           </div>
         )}
 
-        {/* Display Temporary Winner During Multi-Spin (Except the last one which is handled above) */}
+        {/* Display Temporary Winner During Multi-Spin */}
         {winner && spinning && (
            <div
            className="mt-8"
@@ -324,13 +327,6 @@ const LuckyWheel = () => {
          </div>
         )}
         
-        {/* Session Winners List - Hidden if we show the Big Banner above to avoid duplicate? 
-            Or keep it for history/persistence. Let's keep it but maybe style differently or remove if redundant.
-            Actually, let's remove the list below if we show the big banner, 
-            OR keep the list for history and the big banner for "Just Won".
-            
-            Let's keep the list below as a log, and the big banner as the main celebration.
-        */}
         {sessionWinners.length > 0 && spinCount > 1 && (
           <div className="mt-8 text-left glass-card" style={{ padding: '20px', background: 'rgba(30, 41, 59, 0.7)' }}>
             <h4 style={{ fontSize: '1.2rem', marginBottom: '15px', color: '#cbd5e1', borderBottom: '1px solid #475569', paddingBottom: '10px' }}>
