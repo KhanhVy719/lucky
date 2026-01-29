@@ -28,6 +28,8 @@ RUN echo 'server { \
     } \
     }' > /etc/nginx/conf.d/default.conf
 
+# Expose port
 EXPOSE 80
 
-CMD ["nginx", "-g", "daemon off;"]
+# Start Nginx with a script to dump env vars to env-config.js
+CMD ["/bin/sh", "-c", "echo \"window.ENV = { VITE_API_URL: '${VITE_API_URL}' };\" > /usr/share/nginx/html/env-config.js && nginx -g 'daemon off;'"]
