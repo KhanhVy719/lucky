@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongo:
+    image: mongo:latest
+    container_name: lucky-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - lucky-network
+
+  # Backend API
+  backend:
+    build: ./lucky-wheel-backend
+    container_name: lucky-backend
+    restart: always
+    environment:
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:${DB_PASSWORD}@mongo:27017/luckywheel?authSource=admin
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      - mongo
+    networks:
+      - lucky-network
+
+  # Frontend Static App
+  frontend:
+    build: ./lucky-wheel-frontend
+    container_name: lucky-frontend
+    restart: always
+    environment:
+      # This is used by the env-config.js script at runtime
+      VITE_API_URL: https://${DOMAIN}/api
+    depends_on:
+      - backend
+    networks:
+      - lucky-network
+
+  # Caddy Reverse Proxy (Auto SSL)
+  caddy:
+    image: caddy:latest
+    container_name: lucky-caddy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - lucky-network
+
+volumes:
+  mongo-data:
+  caddy_data:
+  caddy_config:
+
+networks:
+  lucky-network:
+    driver: bridge
