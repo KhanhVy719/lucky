@@ -28,16 +28,38 @@ fi
 # 2. Input Configuration
 echo ""
 echo "Please enter your configuration details:"
-read -p "Enter your Domain (e.g., lucky.example.com): " DOMAIN
-read -p "Enter your Email (for SSL certificates): " EMAIL
-read -p "Enter a secure Admin Password for the App: " ADMIN_PASS
-read -s -p "Enter a secure Database Password: " DB_PASS
+
+DOMAIN=""
+while [ -z "$DOMAIN" ]; do
+    read -p "1. Enter your Domain (e.g., lucky.example.com): " DOMAIN
+done
+
+EMAIL=""
+while [ -z "$EMAIL" ]; do
+    read -p "2. Enter your Email (for SSL certificates): " EMAIL
+done
+
+ADMIN_PASS=""
+while [ -z "$ADMIN_PASS" ]; do
+    read -p "3. Enter a secure Admin Password for the App: " ADMIN_PASS
+done
+
+DB_PASS=""
+while [ -z "$DB_PASS" ]; do
+    read -s -p "4. Enter a secure Database Password: " DB_PASS
+    echo "" # New line after silent input
+done
+
+echo ""
+echo "-------------------------------------------------------"
+echo "Configuration Confirmed:"
+echo "Domain: $DOMAIN"
+echo "Email: $EMAIL"
+echo "-------------------------------------------------------"
 echo ""
 
-if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then
-    echo "Error: Domain and Email are required!"
-    exit 1
-fi
+# Remove check since we loop until valid
+# if [ -z "$DOMAIN" ] || [ -z "$EMAIL" ]; then ... fi
 
 # 3. Create Caddyfile for SSL routing
 echo "Creating Caddyfile..."
